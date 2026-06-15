@@ -1,22 +1,12 @@
 import java.util.*;
 
-/**
- * Spell Checker using a Trie (prefix tree).
- *
- * Features:
- *  - Fast O(L) word lookup, where L = length of the word
- *  - Suggestions for misspelled words based on edit distance
- *    (insertions, deletions, substitutions) via DFS over the trie
- */
 public class Main {
 
-    /** A single node in the trie. */
     private static class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
         boolean isWord = false;
     }
 
-    /** Simple suggestion holder: a word and its edit distance from the query. */
     public static class Suggestion {
         public final String word;
         public final int distance;
@@ -41,8 +31,6 @@ public class Main {
             addWord(w);
         }
     }
-
-    /** Add a word to the dictionary. */
     public void addWord(String word) {
         TrieNode node = root;
         for (char ch : word.toLowerCase().toCharArray()) {
@@ -50,14 +38,11 @@ public class Main {
         }
         node.isWord = true;
     }
-
-    /** Returns true if the word exists exactly in the dictionary. */
     public boolean isCorrect(String word) {
         TrieNode node = findNode(word.toLowerCase());
         return node != null && node.isWord;
     }
 
-    /** Returns true if any word in the dictionary starts with the given prefix. */
     public boolean startsWith(String prefix) {
         return findNode(prefix.toLowerCase()) != null;
     }
@@ -73,10 +58,6 @@ public class Main {
         return node;
     }
 
-    /**
-     * Return up to maxResults suggestions for `word`, each within
-     * maxDistance edits, sorted by edit distance then alphabetically.
-     */
     public List<Suggestion> suggest(String word, int maxDistance, int maxResults) {
         String target = word.toLowerCase();
         List<Suggestion> results = new ArrayList<>();
@@ -96,7 +77,6 @@ public class Main {
     }
 
     private void dfs(TrieNode node, String current, String target, int maxDistance, List<Suggestion> results) {
-        // Prune branches that have grown far too long to ever match within maxDistance.
         if (current.length() > target.length() + maxDistance) {
             return;
         }
@@ -113,7 +93,6 @@ public class Main {
         }
     }
 
-    /** Classic Levenshtein distance via dynamic programming. */
     private static int editDistance(String a, String b) {
         int m = a.length();
         int n = b.length();
@@ -128,10 +107,10 @@ public class Main {
                     dp[i][j] = dp[i - 1][j - 1];
                 } else {
                     dp[i][j] = 1 + Math.min(
-                            dp[i - 1][j],       // deletion
+                            dp[i - 1][j],  
                             Math.min(
-                                    dp[i][j - 1],     // insertion
-                                    dp[i - 1][j - 1]  // substitution
+                                    dp[i][j - 1],   
+                                    dp[i - 1][j - 1]  
                             )
                     );
                 }
@@ -141,7 +120,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // Built-in dictionary (words covering A-Z)
         List<String> dictionary = Arrays.asList(
                 "apple", "ant", "arrow", "animal", "area", "answer", "apply", "ago",
                 "banana", "bear", "book", "bottle", "brave", "bridge", "bring", "build",
